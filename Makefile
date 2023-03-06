@@ -1,21 +1,25 @@
 CXX = g++
-CXXFLAGS=-std=c++17 -Wall
+CXXFLAGS=-std=c++17 -Wall -Wextra -pedantic
+# Directories
+SRCDIR = src
+INCDIR = include
+BUILDDIR = build
+# Files
+EXECUTABLE = main
+SOURCES := $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(BUILDDIR)/%.o)
+INCLUDES = -I $(INCDIR)
 
-OBJS = Value.o main.o
+# Targets
+all: $(EXECUTABLE)
 
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $@
 
-#all depends on value
-all:a.out
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-#value depends on objs. it compiules and links the variables to produce value
-a.out : $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
-
-Value.o : Value.cpp Value.h
-	$(CXX) $(CXXFLAGS) -c Value.cpp
-
-main.o : main.cpp Value.h
-	$(CXX) $(CXXFLAGS) -c main.cpp
+.PHONY: clean
 
 clean:
-	rm -f value $(OBJS)
+	rm -f $(BUILDDIR)/*.o $(EXECUTABLE)
