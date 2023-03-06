@@ -3,23 +3,41 @@
 
 Value::Value() { data = 0; }
 Value::Value(int x) { data = x; }
-Value::Value(int x, std::vector<std::unique_ptr<Value>> &children) : data{x}, prev{std::move(children)} {}
+Value::Value(int x, std::vector<Value *> &children) : data{x}, prev{std::move(children)} {}
 
 Value Value::operator+(Value &obj) const
 {
-    std::vector<std::unique_ptr<Value>> children;
-    children.push_back(std::make_unique<Value>(data));
-    children.push_back(std::make_unique<Value>(obj.data));
-    Value newValue(data + obj.data, children);
+    std::vector<Value *> children;
+
+    for (const auto &child : prev)
+    {
+        children.push_back(std::move(child));
+    }
+    for (const auto &child : obj.prev)
+    {
+        children.push_back(std::move(child));
+    }
+    int stored = (data + obj.data);
+    Value newValue(stored, children);
     return newValue;
 }
 
 Value Value::operator*(Value &obj) const
 {
-    std::vector<std::unique_ptr<Value>> children;
-    children.push_back(std::make_unique<Value>(data));
-    children.push_back(std::make_unique<Value>(obj.data));
-    Value newValue(data * obj.data, children);
+    std::vector<Value *> children;
+
+    for (const auto &child : prev)
+    {
+        std::cout << "read?" << std::endl;
+        children.push_back(std::move(child));
+    }
+    for (const auto &child : obj.prev)
+    {
+        std::cout << "read?" << std::endl;
+        children.push_back(std::move(child));
+    }
+    int stored = (data * obj.data);
+    Value newValue(stored, children);
     return newValue;
 }
 

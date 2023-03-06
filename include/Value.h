@@ -7,12 +7,12 @@ class Value
 {
 private:
     int data;
-    std::vector<std::unique_ptr<Value>> prev;
+    std::vector<Value *> prev;
 
 public:
     Value();
     Value(int x);
-    Value(int x, std::vector<std::unique_ptr<Value>> &children);
+    Value(int x, std::vector<Value *> &children);
 
     Value operator+(Value &obj) const;
     Value operator*(Value &obj) const;
@@ -23,8 +23,6 @@ public:
 
     void print();
     void children();
-
-    std::vector<Value *> getPrev() const;
 };
 
 #endif
