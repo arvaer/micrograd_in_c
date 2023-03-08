@@ -7,21 +7,21 @@ class Value
 {
 private:
     int data;
-    std::vector<Value *> prev;
+    char label;
+    std::vector<Value const *> prev;
 
 public:
     Value();
     Value(int x);
-    Value(int x, std::vector<Value *> &children);
-
+    Value(int x, std::vector<Value const *> children);
+    Value(const Value &other);
+    Value(Value *child);
     Value operator+(Value &obj) const;
     Value operator*(Value &obj) const;
 
-    friend bool operator<(const Value &left, const Value &right);
-    friend bool operator!=(const Value &left, const Value &right);
     friend std::ostream &operator<<(std::ostream &os, const Value &val);
 
-    void print();
+    void print() const;
     void children();
 };
 
