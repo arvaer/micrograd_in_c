@@ -3,7 +3,7 @@
 
 Value::Value() { data = 0; }
 Value::Value(int x) { data = x; }
-Value::Value(int x, std::vector<Value const *> children) : data{x}
+Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}, op{*_op}
 {
     for (const auto child : children)
     {
@@ -21,6 +21,7 @@ Value::Value(const Value &Other) : data{Other.data}
 Value Value::operator+(Value &obj) const
 {
     std::vector<Value const *> children;
+    char op[2] = {'+', '\0'};
     for (const auto child : obj.prev)
     {
         children.push_back(child);
@@ -28,13 +29,14 @@ Value Value::operator+(Value &obj) const
     children.push_back(this);
     children.push_back(&obj);
     int stored = (data + obj.data);
-    Value newValue(stored, children);
+    Value newValue(stored, op, children);
     return newValue;
 }
 
 Value Value::operator*(Value &obj) const
 {
     std::vector<Value const *> children;
+    char op[2] = {'*', '\0'};
     for (const auto child : obj.prev)
     {
         children.push_back(child);
@@ -42,9 +44,24 @@ Value Value::operator*(Value &obj) const
     children.push_back(this);
     children.push_back(&obj);
     int stored = (data * obj.data);
-    Value newValue(stored, children);
+    Value newValue(stored, op, children);
     return newValue;
 }
+Value Value::operator/(Value &obj) const
+{
+    std::vector<Value const *> children;
+    char op[2] = {'/', '\0'};
+    for (const auto child : obj.prev)
+    {
+        children.push_back(child);
+    }
+    children.push_back(this);
+    children.push_back(&obj);
+    int value = (data + obj.data);
+    Value newValue(value, op, children);
+    return newValue;
+}
+
 std::ostream &operator<<(std::ostream &os, const Value &val)
 {
     os << val.data;
