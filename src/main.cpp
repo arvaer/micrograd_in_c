@@ -36,7 +36,6 @@ void build(Value const *v, vector<Value *> &nodes, vector<pair<const Value *, Va
 
 int main()
 {
-    int id;
     vector<Value *> nodes;
     vector<pair<const Value *, Value>> edges;
     Value a(17);
@@ -45,11 +44,21 @@ int main()
     build(&c, nodes, edges);
     for (auto node : nodes)
     {
-        id = rand();
+        int id = rand();
         // create a record for each node;
-        cout << id << "[shape=circle, style=solid, label=" << node->getValue() << "]" << endl;
-        // if the record is the result of an operation, create an op node
-        // connect the node to that edge
+        cout << id << "[shape=circle, style=solid, label=\"" << node->getValue() << "\"]" << endl;
+        if (node->getOp() != '~')
+        {
+            // if the record is the result of an operation, create an op node
+            int id2 = rand();
+            cout << id2 << "[label=\"" << node->getOp() << "\"]" << endl;
+            // connect the node to that edge
+            cout << id2 << " -> " << id << endl;
+        }
+    }
+
+    for (auto n1, auto n2 : edges)
+    {
     }
 }
 

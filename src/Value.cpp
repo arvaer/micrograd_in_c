@@ -115,9 +115,9 @@ std::vector<Value const *> Value::getChildren() const
     return prev;
 }
 
-void Value::getOp() const
+char Value::getOp() const
 {
-    std::cout << op << std::endl;
+    return op[0];
 }
 
 int Value::getValue() const

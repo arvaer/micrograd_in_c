@@ -26,7 +26,7 @@ public:
     void print() const;
     void children();
     std::vector<Value const *> getChildren() const;
-    void getOp() const;
+    char getOp() const;
     int getValue() const;
 };
 
