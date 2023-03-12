@@ -1,24 +1,29 @@
 #include "Value.h"
 #include <iostream>
 #include <string.h>
-Value::Value() {}
-Value::Value(int x)
+Value::Value() : data{0}, op{}
 {
-    data = x;
+    std::cout << "Empty Value Object Constructed" << std::endl;
+}
+Value::Value(int x) : data{x}, op{}
+{
     op[0] = '~';
     op[1] = '\0';
     std::cout << "Constructed Value with op = " << op << '\n';
 }
-Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}, op{*_op}
+Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}
 {
+    op[0] = _op[0];
+    op[1] = '\0'; // add null terminator
     for (const auto child : children)
     {
         prev.push_back(child);
     }
 }
-
-Value::Value(const Value &Other) : data{Other.data}
+Value::Value(const Value &Other) : data{Other.data}, op{}
 {
+    op[0] = Other.op[0];
+    op[1] = '\0'; // add null terminator
     for (const auto child : Other.prev)
     {
         prev.push_back(child);
@@ -79,7 +84,14 @@ std::ostream &operator<<(std::ostream &os, const Value &val)
     os << val.data;
     return os;
 }
-void Value::print() const { std::cout << data << " and " << op << '\n'; }
+
+void Value::print() const
+{
+    std::cout << "v : " << data << " and ";
+    std::cout.write(op, 1); // write a single character from op
+    std::cout << "\n";
+}
+
 void Value::children()
 {
     std::cout << "@Number of children: " << prev.size() << '\n';

@@ -8,7 +8,7 @@ bool isIn(vector<Value> values, Value value)
 {
     for (auto i : values)
     {
-        std::cout << "Checking " << &i << " against " << &value << '\n';
+        // std::cout << "Checking " << &i << " against " << &value << '\n';
         if (&i == &value)
         {
             return true;
@@ -16,22 +16,27 @@ bool isIn(vector<Value> values, Value value)
     }
     return false;
 }
-
-void build(Value const &v, vector<Value> &node, vector<pair<const Value, Value>> &edges)
+void build(Value const *v, vector<Value> *node, vector<pair<const Value, Value>> *edges)
 {
-    if (!isIn(node, v))
+    if (!isIn(*node, *v))
     {
-        node.push_back(v);
-        vector<Value const *> children = v.getChildren();
+        node->push_back(*v);
+        vector<Value const *> children = (*v).getChildren();
         if (!children.empty())
         {
             for (const auto child : children)
             {
-                pair<const Value, Value> edge((*child), v);
-                edges.push_back(edge);
-                build((*child), node, edges);
+                pair<const Value &, Value> edge(*v, *child);
+                (*edges).push_back(edge);
+                build(child, node, edges);
             }
         }
+    }
+
+    (*v).print();
+    for (auto n : *node)
+    {
+        n.print();
     }
 }
 
@@ -43,11 +48,10 @@ int main()
     Value a(17);
     Value b(10);
     Value c = a + b;
-    build(c, nodes, edges);
+    build(&c, &nodes, &edges);
     for (auto node : nodes)
     {
         id = rand();
-        node.print();
         // need to add edge for op
     }
     // Pipe the output to the dot utility to generate the graph visualization
