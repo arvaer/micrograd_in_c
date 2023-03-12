@@ -27,6 +27,7 @@ public:
     void children();
     std::vector<Value const *> getChildren() const;
     void getOp() const;
+    int getValue() const;
 };
 
 #endif

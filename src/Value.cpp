@@ -119,3 +119,8 @@ void Value::getOp() const
 {
     std::cout << op << std::endl;
 }
+
+int Value::getValue() const
+{
+    return data;
+}
