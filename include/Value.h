@@ -15,6 +15,7 @@ public:
     Value(int x);
     Value(int x, char _op[2], std::vector<Value const *> children);
     Value(const Value &other);
+    bool operator==(const Value &other) const;
     Value(Value *child);
     Value operator+(Value &obj) const;
     Value operator*(Value &obj) const;
@@ -24,6 +25,8 @@ public:
 
     void print() const;
     void children();
+    std::vector<Value const *> getChildren() const;
+    void getOp() const;
 };
 
 #endif

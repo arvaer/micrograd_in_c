@@ -1,8 +1,14 @@
 #include "Value.h"
 #include <iostream>
-
-Value::Value() { data = 0; }
-Value::Value(int x) { data = x; }
+#include <string.h>
+Value::Value() {}
+Value::Value(int x)
+{
+    data = x;
+    op[0] = '~';
+    op[1] = '\0';
+    std::cout << "Constructed Value with op = " << op << '\n';
+}
 Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}, op{*_op}
 {
     for (const auto child : children)
@@ -18,6 +24,12 @@ Value::Value(const Value &Other) : data{Other.data}
         prev.push_back(child);
     }
 }
+
+bool Value::operator==(const Value &other) const
+{
+    return data == other.data && strcmp(op, other.op) == 0 && prev == other.prev;
+}
+
 Value Value::operator+(Value &obj) const
 {
     std::vector<Value const *> children;
@@ -67,7 +79,7 @@ std::ostream &operator<<(std::ostream &os, const Value &val)
     os << val.data;
     return os;
 }
-void Value::print() const { std::cout << data << '\n'; }
+void Value::print() const { std::cout << data << " and " << op << '\n'; }
 void Value::children()
 {
     std::cout << "@Number of children: " << prev.size() << '\n';
@@ -84,4 +96,14 @@ void Value::children()
         }
         std::cout << ": " << prev[i]->data << '\n';
     }
+}
+
+std::vector<Value const *> Value::getChildren() const
+{
+    return prev;
+}
+
+void Value::getOp() const
+{
+    std::cout << op << std::endl;
 }
