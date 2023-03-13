@@ -16,7 +16,7 @@ bool isIn(vector<Value *> values, Value *value)
     return false;
 }
 
-void build(Value const *v, vector<Value *> &nodes, vector<pair<const Value *, Value>> &edges)
+void build(Value const *v, vector<Value *> &nodes, vector<pair<Value *, Value *>> &edges)
 {
     if (!isIn(nodes, const_cast<Value *>(v)))
     {
@@ -26,7 +26,7 @@ void build(Value const *v, vector<Value *> &nodes, vector<pair<const Value *, Va
         {
             for (const auto child : children)
             {
-                pair<const Value *, Value> edge(v, *child);
+                pair<Value *, Value *> edge(const_cast<Value *>(v), const_cast<Value *>(child));
                 edges.push_back(edge);
                 build(child, nodes, edges);
             }
@@ -37,7 +37,7 @@ void build(Value const *v, vector<Value *> &nodes, vector<pair<const Value *, Va
 int main()
 {
     vector<Value *> nodes;
-    vector<pair<const Value *, Value>> edges;
+    vector<pair<Value *, Value *>> edges;
     Value a(17);
     Value b(10);
     Value c = a + b;
@@ -58,7 +58,7 @@ int main()
 
     // for (auto edge : edges)
     // {
-    //     cout << (edge.second).id + 1 << "->" << (edge.first)->id << ";" << endl;
+    //     cout << (edge.second)->id << "->" << (edge.first)->id + 1 << ";" << endl;
     // }
 
     // Pipe the output to the dot utility to generate the graph visualization
@@ -98,7 +98,7 @@ int main()
         for (auto edge : edges)
         {
             char conn[256];
-            snprintf(conn, sizeof(conn), "%d->%d;\n", (edge.second).id + 1, (edge.first)->id);
+            snprintf(conn, sizeof(conn), "%d->%d;\n", (edge.second)->id, (edge.first)->id + 1);
             fputs(conn, stdout);
             fputs(conn, pipe);
         }
