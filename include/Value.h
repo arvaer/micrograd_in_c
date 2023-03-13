@@ -2,7 +2,7 @@
 #define VALUE_H
 #include <vector>
 #include <memory>
-
+#include <stdlib.h>
 class Value
 {
 private:
@@ -11,6 +11,7 @@ private:
     std::vector<Value const *> prev;
 
 public:
+    int id = rand();
     Value();
     Value(int x);
     Value(int x, char _op[2], std::vector<Value const *> children);

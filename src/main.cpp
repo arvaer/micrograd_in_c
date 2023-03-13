@@ -44,21 +44,21 @@ int main()
     build(&c, nodes, edges);
     for (auto node : nodes)
     {
-        int id = rand();
         // create a record for each node;
-        cout << id << "[shape=circle, style=solid, label=\"" << node->getValue() << "\"]" << endl;
+        cout << node->id << "[shape=circle, style=solid, label=\"" << node->getValue() << "\"]" << endl;
         if (node->getOp() != '~')
         {
             // if the record is the result of an operation, create an op node
-            int id2 = rand();
-            cout << id2 << "[label=\"" << node->getOp() << "\"]" << endl;
+            // naivly add 1 to a nodes id to get the op id
+            cout << node->id + 1 << "[label=\"" << node->getOp() << "\"]" << endl;
             // connect the node to that edge
-            cout << id2 << " -> " << id << endl;
+            cout << node->id + 1 << " -> " << node->id << endl;
         }
-    }
+        }
 
-    for (auto n1, auto n2 : edges)
+    for (auto edge : edges)
     {
+        cout << (edge.second).id + 1 << "->" << (edge.first)->id << ";" << endl;
     }
 }
 
