@@ -9,7 +9,6 @@ Value::Value(int x) : data{x}, op{}
 {
     op[0] = '~';
     op[1] = '\0';
-    std::cout << "Constructed Value with op = " << op << '\n';
 }
 Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}
 {
