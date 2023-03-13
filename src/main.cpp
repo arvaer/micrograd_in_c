@@ -41,25 +41,12 @@ int main()
     Value a(17);
     Value b(10);
     Value c = a + b;
-    build(&c, nodes, edges);
-    // for (auto node : nodes)
-    // {
-    //     // create a record for each node;
-    //     cout << node->id << "[shape=circle, style=solid, label=\"" << node->getValue() << "\"];" << endl;
-    //     if (node->getOp() != '~')
-    //     {
-    //         // if the record is the result of an operation, create an op node
-    //         // naivly add 1 to a nodes id to get the op id
-    //         cout << node->id + 1 << "[label=\"" << node->getOp() << "\"];" << endl;
-    //         // connect the node to that edge
-    //         cout << node->id + 1 << " -> " << node->id << ";" << endl;
-    //     }
-    // }
-
-    // for (auto edge : edges)
-    // {
-    //     cout << (edge.second)->id << "->" << (edge.first)->id + 1 << ";" << endl;
-    // }
+    // build(&c, nodes, edges);
+    Value d(16);
+    Value e(17);
+    Value f = c + d;
+    Value h = f + e;
+    build(&h, nodes, edges);
 
     // Pipe the output to the dot utility to generate the graph visualization
     FILE *pipe = popen("dot -Tpng -o ./graphs/output.png", "w");
