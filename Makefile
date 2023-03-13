@@ -4,6 +4,7 @@ CXXFLAGS=-std=c++17 -Wall -Wextra -pedantic
 SRCDIR = src
 INCDIR = include
 BUILDDIR = build
+GRAPHDIR = graphs
 # Files
 EXECUTABLE = main
 SOURCES := $(wildcard $(SRCDIR)/*.cpp)
@@ -23,3 +24,4 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	rm -f $(BUILDDIR)/*.o $(EXECUTABLE)
+	rm -f $(GRAPHDIR)/*.png 
