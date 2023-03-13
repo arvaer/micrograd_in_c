@@ -42,41 +42,54 @@ int main()
     Value b(10);
     Value c = a + b;
     build(&c, nodes, edges);
-    for (auto node : nodes)
+    // for (auto node : nodes)
+    // {
+    //     // create a record for each node;
+    //     cout << node->id << "[shape=circle, style=solid, label=\"" << node->getValue() << "\"];" << endl;
+    //     if (node->getOp() != '~')
+    //     {
+    //         // if the record is the result of an operation, create an op node
+    //         // naivly add 1 to a nodes id to get the op id
+    //         cout << node->id + 1 << "[label=\"" << node->getOp() << "\"];" << endl;
+    //         // connect the node to that edge
+    //         cout << node->id + 1 << " -> " << node->id << ";" << endl;
+    //     }
+    // }
+
+    // for (auto edge : edges)
+    // {
+    //     cout << (edge.second).id + 1 << "->" << (edge.first)->id << ";" << endl;
+    // }
+
+    // Pipe the output to the dot utility to generate the graph visualization
+    FILE *pipe = popen("dot -Tpng -o ./graphs/output.png", "w");
+    if (pipe)
     {
-        // create a record for each node;
-        cout << node->id << "[shape=circle, style=solid, label=\"" << node->getValue() << "\"]" << endl;
-        if (node->getOp() != '~')
+        for (auto node : nodes)
         {
-            // if the record is the result of an operation, create an op node
-            // naivly add 1 to a nodes id to get the op id
-            cout << node->id + 1 << "[label=\"" << node->getOp() << "\"]" << endl;
-            // connect the node to that edge
-            cout << node->id + 1 << " -> " << node->id << endl;
-        }
+            // create a record for each node;
+            char label[256];
+            snprintf(label, sizeof(label), "%d[shape=circle, style=solid, label=\"%d\"];\n", node->id, node->getValue());
+            fputs(label, stdout);
+            if (node->getOp() != '~')
+            {
+                // if the record is the result of an operation, create an op node
+                // naivly add 1 to a nodes id to get the op id
+                char op[256];
+                snprintf(op, sizeof(op), "%d[label=\"%c\"];\n", node->id + 1, node->getOp());
+                fputs(op, stdout);
+                // connect the node to that edge
+                char edge[256];
+                snprintf(edge, sizeof(edge), "%d -> %d;\n", node->id + 1, node->id);
+                fputs(edge, stdout);
+            }
         }
 
-    for (auto edge : edges)
-    {
-        cout << (edge.second).id + 1 << "->" << (edge.first)->id << ";" << endl;
+        for (auto edge : edges)
+        {
+            char conn[256];
+            snprintf(conn, sizeof(conn), "%d->%d;\n", (edge.second).id + 1, (edge.first)->id);
+            fputs(conn, stdout);
+        }
     }
 }
-
-// Pipe the output to the dot utility to generate the graph visualization
-// FILE *pipe = popen("dot -Tpng -o ./graphs/output.png", "w");
-// if (pipe)
-// {
-//     fputs("digraph {\n", pipe);
-//     fputs("  x [shape=circle, style=solid];\n", pipe);
-//     fputs("  y [shape=circle, style=solid];\n", pipe);
-//     fputs("  add [label=\"+\", shape=rectangle, style=solid];\n", pipe);
-//     fputs("  mul [label=\"*\", shape=rectangle, style=solid];\n", pipe);
-//     fputs("  two [label=\"2\", shape=rectangle, style=solid];\n", pipe);
-//     fputs("  x -> add;\n", pipe);
-//     fputs("  y -> add;\n", pipe);
-//     fputs("  add -> mul;\n", pipe);
-//     fputs("  two -> mul;\n", pipe);
-//     fputs("}\n", pipe);
-//     fflush(pipe);
-//     pclose(pipe);
-// }
