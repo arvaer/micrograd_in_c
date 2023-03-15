@@ -21,13 +21,17 @@ void Graph::visualize()
         char top[256];
         snprintf(top, sizeof(top), "digraph {\n");
         fputs(top, pipe);
+        fputs("rankdir=LR;\n", pipe);
         fputs(top, stdout);
         for (auto node : nodes)
         {
             char label[256];
             std::snprintf(label, sizeof(label),
-                          "%d[shape=circle, style=solid, label=\"value :%d | grad:%d\"];\n",
+                          "%d[shape=circle, fixedsize=false, width=0.6, style=solid, label=\"value :%d | grad:%d\"];\n",
                           node->id, static_cast<int>(node->getValue()), static_cast<int>(node->getGrad()));
+            // std::snprintf(label, sizeof(label),
+            //               "%d[shape=circle, style=solid, label=\"value :%d | grad:%d\"];\n",
+            //               node->id, static_cast<int>(node->getValue()), static_cast<int>(node->getGrad()));
             fputs(label, pipe);
             fputs(label, stdout);
 
