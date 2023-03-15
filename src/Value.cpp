@@ -1,6 +1,7 @@
 #include "Value.h"
 #include <iostream>
 #include <string.h>
+#include <math.h>
 Value::Value() : data{0}, op{}, grad{0}
 {
     std::cout << "Empty Value Object Constructed" << std::endl;
@@ -68,15 +69,26 @@ Value Value::operator/(Value &obj) const
 {
     std::vector<Value const *> children;
     char op[2] = {'/', '\0'};
-    for (const auto child : obj.prev)
-    {
-        children.push_back(child);
-    }
+    // for (const auto child : obj.prev)
+    // {
+    //     children.push_back(child);
+    // }
     children.push_back(this);
     children.push_back(&obj);
     int value = (data + obj.data);
     Value newValue(value, op, children);
     return newValue;
+}
+
+Value Value::tanh() const
+{
+    std::vector<Value const *> children;
+    char op[5] = {'t', 'a', 'n', 'h', '\0'};
+    double x = data;
+    double t = (exp(2 * x) + 1) / (exp(2 * x) - 1);
+    children.push_back(this);
+
+    return Value(t, op, children);
 }
 
 std::ostream &operator<<(std::ostream &os, const Value &val)

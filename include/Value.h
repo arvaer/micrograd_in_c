@@ -22,7 +22,7 @@ public:
     Value operator+(Value &obj) const;
     Value operator*(Value &obj) const;
     Value operator/(Value &obj) const;
-
+    Value tanh() const;
     friend std::ostream &operator<<(std::ostream &os, const Value &val);
 
     void print() const;
