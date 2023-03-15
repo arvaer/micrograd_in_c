@@ -23,5 +23,4 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 .PHONY: clean
 
 clean:
-	rm -f $(BUILDDIR)/*.o $(EXECUTABLE)
-	rm -f $(GRAPHDIR)/*.png 
+	rm -f $(BUILDDIR)/*.o $(EXECUTABLE) $(GRAPHDIR)/*.png 

@@ -7,14 +7,18 @@ using namespace ::std;
 
 int main()
 {
-    Value a(17);
-    Value b(10);
-    Value c = a + b;
-    Value d(16);
-    Value e(17);
-    Value f = c + d;
-    Value h = f + e;
-    Graph g(&h);
-    g.visualize();
+    Value x1(2);
+    Value x2(0);
+    Value w1(-3);
+    Value w2(1);
+    Value b(6.7);
+    Value x1w1 = x1 * w1;
+    Value x2w2 = x2 * w2;
+    Value x1w1x2w2 = x1w1 + x2w2;
+    Graph x(&x1w1x2w2);
+    x.visualize();
+    // Value n = x1w1x2w2 + b;
+    // Graph g(&n);
+    // g.visualize();
     return 0;
 }

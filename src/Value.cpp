@@ -1,16 +1,16 @@
 #include "Value.h"
 #include <iostream>
 #include <string.h>
-Value::Value() : data{0}, op{}
+Value::Value() : data{0}, op{}, grad{0}
 {
     std::cout << "Empty Value Object Constructed" << std::endl;
 }
-Value::Value(int x) : data{x}, op{}
+Value::Value(int x) : data{x}, op{}, grad{0}
 {
     op[0] = '~';
     op[1] = '\0';
 }
-Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}
+Value::Value(int x, char _op[2], std::vector<Value const *> children) : data{x}, grad{0}
 {
     op[0] = _op[0];
     op[1] = '\0'; // add null terminator
@@ -23,6 +23,7 @@ Value::Value(const Value &Other) : data{Other.data}, op{}
 {
     op[0] = Other.op[0];
     op[1] = '\0'; // add null terminator
+    grad = Other.grad;
     for (const auto child : Other.prev)
     {
         prev.push_back(child);
@@ -38,10 +39,10 @@ Value Value::operator+(Value &obj) const
 {
     std::vector<Value const *> children;
     char op[2] = {'+', '\0'};
-    for (const auto child : obj.prev)
-    {
-        children.push_back(child);
-    }
+    // for (const auto child : obj.prev)
+    // {
+    //     children.push_back(child);
+    // }
     children.push_back(this);
     children.push_back(&obj);
     int stored = (data + obj.data);
@@ -53,10 +54,10 @@ Value Value::operator*(Value &obj) const
 {
     std::vector<Value const *> children;
     char op[2] = {'*', '\0'};
-    for (const auto child : obj.prev)
-    {
-        children.push_back(child);
-    }
+    // for (const auto child : obj.prev)
+    // {
+    //     children.push_back(child);
+    // }
     children.push_back(this);
     children.push_back(&obj);
     int stored = (data * obj.data);
@@ -122,4 +123,14 @@ char Value::getOp() const
 int Value::getValue() const
 {
     return data;
+}
+
+double Value::getGrad() const
+{
+    return grad;
+}
+
+void Value::setGrad(double _grad)
+{
+    grad = _grad;
 }
