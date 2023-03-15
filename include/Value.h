@@ -8,6 +8,7 @@ class Value
 private:
     int data;
     char op[2];
+    double grad;
     std::vector<Value const *> prev;
 
 public:
@@ -21,7 +22,7 @@ public:
     Value operator+(Value &obj) const;
     Value operator*(Value &obj) const;
     Value operator/(Value &obj) const;
-
+    Value tanh() const;
     friend std::ostream &operator<<(std::ostream &os, const Value &val);
 
     void print() const;
@@ -29,6 +30,8 @@ public:
     std::vector<Value const *> getChildren() const;
     char getOp() const;
     int getValue() const;
+    double getGrad() const;
+    void setGrad(double _grad);
 };
 
 #endif
