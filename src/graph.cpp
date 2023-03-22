@@ -4,16 +4,19 @@
 #include <iostream>
 #include <stdlib.h>
 
-Graph::Graph(Value const *v)
+template <typename T>
+Graph<T>::Graph(Value<T> const *v)
 {
     build(v);
 }
-void Graph::build(Value const *v)
+template <typename T>
+void Graph<T>::build(Value<T> const *v)
 {
     buildHelper(v, nodes, edges);
 }
 
-void Graph::visualize()
+template <typename T>
+void Graph<T>::visualize()
 {
     FILE *pipe = popen("dot -Tpng -o ./graphs/output.png", "w");
     if (pipe)
@@ -61,7 +64,8 @@ void Graph::visualize()
     }
 }
 
-bool Graph::isIn(std::vector<Value *> values, Value *value)
+template <typename T>
+bool Graph<T>::isIn(std::vector<Value<T> *> values, Value<T> *value)
 {
     for (auto i : values)
     {
@@ -73,18 +77,19 @@ bool Graph::isIn(std::vector<Value *> values, Value *value)
     return false;
 }
 
-void Graph::buildHelper(Value const *v, std::vector<Value *> &nodes, std::vector<std::pair<Value *, Value *>> &edges)
+template <typename T>
+void Graph<T>::buildHelper(Value<T> const *v, std::vector<Value<T> *> &nodes, std::vector<std::pair<Value<T> *, Value<T> *>> &edges)
 {
 
-    if (!isIn(nodes, const_cast<Value *>(v)))
+    if (!isIn(nodes, const_cast<Value<T> *>(v)))
     {
-        nodes.push_back(const_cast<Value *>(v));
-        std::vector<Value const *> children = (*v).getChildren();
+        nodes.push_back(const_cast<Value<T> *>(v));
+        std::vector<Value<T> const *> children = (*v).getChildren();
         if (!children.empty())
         {
             for (const auto child : children)
             {
-                std::pair<Value *, Value *> edge(const_cast<Value *>(v), const_cast<Value *>(child));
+                std::pair<Value<T> *, Value<T> *> edge(const_cast<Value<T> *>(v), const_cast<Value<T> *>(child));
                 edges.push_back(edge);
                 buildHelper(child, nodes, edges);
             }

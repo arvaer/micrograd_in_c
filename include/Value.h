@@ -3,35 +3,40 @@
 #include <vector>
 #include <memory>
 #include <stdlib.h>
+
+template <typename T = double>
 class Value
 {
 private:
-    int data;
+    T data;
     char op[2];
-    double grad;
-    std::vector<Value const *> prev;
+    T grad;
+    std::vector<Value<T> const *> prev;
 
 public:
     int id = rand();
-    Value();
-    Value(int x);
-    Value(int x, char _op[2], std::vector<Value const *> children);
-    Value(const Value &other);
-    bool operator==(const Value &other) const;
-    Value(Value *child);
-    Value operator+(Value &obj) const;
-    Value operator*(Value &obj) const;
-    Value operator/(Value &obj) const;
-    Value tanh() const;
-    friend std::ostream &operator<<(std::ostream &os, const Value &val);
+    Value<T>();
+    Value<T>(T x);
+    Value<T>(T x, char _op[2], std::vector<Value<T> const *> children);
+    Value<T>(const Value<T> &other);
+    bool operator==(const Value<T> &other) const;
+    // Value<T>(Value<T> *child);
+    Value<T> operator+(Value<T> &obj) const;
+    Value<T> operator*(Value<T> &obj) const;
+    Value<T> operator/(Value<T> &obj) const;
+    Value<T> tanh() const;
+    template <typename Y>
+    friend std::ostream &operator<<(std::ostream &os, const Value<Y> &val);
+    // friend std::ostream <>&operator<<(std::ostream &os, const Value<T> &val);
 
     void print() const;
     void children();
-    std::vector<Value const *> getChildren() const;
+    std::vector<Value<T> const *> getChildren() const;
     char getOp() const;
-    int getValue() const;
-    double getGrad() const;
-    void setGrad(double _grad);
+    T getValue() const;
+    T getGrad() const;
+    void setGrad(T _grad);
 };
+template class Value<double>;
 
 #endif
