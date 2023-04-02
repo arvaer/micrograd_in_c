@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <stdlib.h>
+#include <functional>
 
 template <typename T = double>
 class Value
@@ -12,6 +13,7 @@ private:
     char op[2];
     T grad;
     std::vector<Value<T> const *> prev;
+    std::function<void()> backward;
 
 public:
     int id = rand();
@@ -19,12 +21,12 @@ public:
     Value<T>(T x);
     Value<T>(T x, char _op[2], std::vector<Value<T> const *> children);
     Value<T>(const Value<T> &other);
-    bool operator==(const Value<T> &other) const;
+    bool operator==(const Value<T> &other);
     // Value<T>(Value<T> *child);
-    Value<T> operator+(Value<T> &obj) const;
-    Value<T> operator*(Value<T> &obj) const;
-    Value<T> operator/(Value<T> &obj) const;
-    Value<T> tanh() const;
+    Value<T> operator+(Value<T> &obj);
+    Value<T> operator*(Value<T> &obj);
+    Value<T> operator/(Value<T> &obj);
+    Value<T> tanh();
     template <typename Y>
     friend std::ostream &operator<<(std::ostream &os, const Value<Y> &val);
     // friend std::ostream <>&operator<<(std::ostream &os, const Value<T> &val);
@@ -36,6 +38,7 @@ public:
     T getValue() const;
     T getGrad() const;
     void setGrad(T _grad);
+
 };
 template class Value<double>;
 
