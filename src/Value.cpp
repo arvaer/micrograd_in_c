@@ -2,21 +2,22 @@
 #include <iostream>
 #include <string.h>
 #include <math.h>
+#include <functional>
 
 template <typename T>
-Value<T>::Value() : data{0}, op{}, grad{0}
+Value<T>::Value() : data{0}, op{}, grad{1}
 {
     std::cout << "Empty Value Object Constructed" << std::endl;
 }
 template <typename T>
-Value<T>::Value(T x) : data{x}, op{}, grad{0}
+Value<T>::Value(T x) : data{x}, op{}, grad{1}
 {
     op[0] = '~';
     op[1] = '\0';
 }
 
 template <typename T>
-Value<T>::Value(T x, char _op[2], std::vector<Value<T> const *> children) : data{x}, grad{0}
+Value<T>::Value(T x, char _op[2], std::vector<Value<T> const *> children) : data{x}, grad{1}
 {
     op[0] = _op[0];
     op[1] = '\0'; // add null terminator
@@ -25,6 +26,7 @@ Value<T>::Value(T x, char _op[2], std::vector<Value<T> const *> children) : data
         prev.push_back(child);
     }
 }
+
 template <typename T>
 Value<T>::Value(const Value<T> &Other) : data{Other.data}, op{}
 {
@@ -37,13 +39,13 @@ Value<T>::Value(const Value<T> &Other) : data{Other.data}, op{}
     }
 }
 template <typename T>
-bool Value<T>::operator==(const Value<T> &other) const
+bool Value<T>::operator==(const Value<T> &other)
 {
     return data == other.data && strcmp(op, other.op) == 0 && prev == other.prev;
 }
 
 template <typename T>
-Value<T> Value<T>::operator+(Value<T> &obj) const
+Value<T> Value<T>::operator+(Value<T> &obj) 
 {
     std::vector<Value<T> const *> children;
     char op[2] = {'+', '\0'};
@@ -59,7 +61,7 @@ Value<T> Value<T>::operator+(Value<T> &obj) const
 }
 
 template <typename T>
-Value<T> Value<T>::operator*(Value<T> &obj) const
+Value<T> Value<T>::operator*(Value<T> &obj) 
 {
     std::vector<Value<T> const *> children;
     char op[2] = {'*', '\0'};
@@ -75,7 +77,7 @@ Value<T> Value<T>::operator*(Value<T> &obj) const
 }
 
 template <typename T>
-Value<T> Value<T>::operator/(Value<T> &obj) const
+Value<T> Value<T>::operator/(Value<T> &obj) 
 {
     std::vector<Value<T> const *> children;
     char op[2] = {'/', '\0'};
@@ -91,16 +93,28 @@ Value<T> Value<T>::operator/(Value<T> &obj) const
 }
 
 template <typename T>
-Value<T> Value<T>::tanh() const
+Value<T> Value<T>::tanh() 
 {
     std::vector<Value<T> const *> children;
     char op[5] = {'t', 'a', 'n', 'h', '\0'};
     T x = data;
     T t = (exp(2 * x) + 1) / (exp(2 * x) - 1);
     children.push_back(this);
+    Value<T> result(t, op, children);
 
-    return Value<T>(t, op, children);
+    result.backward = [this, &result]()
+    {
+        T dtanh = 1 - std::pow(std::tanh(data), 2);
+        grad += dtanh * result.grad;
+        for (const auto &child : prev)
+        {
+            (*child).backward();
+        }
+    };
+
+    return result;
 }
+
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Value<T> &val)
 {
