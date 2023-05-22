@@ -25,29 +25,26 @@ void Graph<T>::visualize()
         snprintf(top, sizeof(top), "digraph {\n");
         fputs(top, pipe);
         fputs("rankdir=LR;\n", pipe);
-        fputs(top, stdout);
+        // fputs(top, stdout);
         for (auto node : nodes)
         {
             char label[256];
-            // std::snprintf(label, sizeof(label),
-            //               "%d[shape=circle, fixedsize=false, width=0.6, style=solid, label=\"value :%d | grad:%d\"];\n",
-            //               node->id, static_cast<int>(node->getValue()), static_cast<int>(node->getGrad()));
             std::snprintf(label, sizeof(label),
-                          "%d[shape=circle, style=solid, label=\"value :%d | grad:%d\"];\n",
-                          node->id, static_cast<int>(node->getValue()), static_cast<int>(node->getGrad()));
+                          "%d[shape=circle, style=solid, label=\"value :%.3f | grad:%.3f\"];\n",
+                          node->id, (node->getValue()), (node->getGrad()));
             fputs(label, pipe);
-            fputs(label, stdout);
+            // fputs(label, stdout);
 
             if (node->getOp() != '~')
             {
                 char op[256];
                 std::snprintf(op, sizeof(op), "%d[label=\"%c\"];\n", node->id + 1, node->getOp());
                 fputs(op, pipe);
-                fputs(op, stdout);
+                // fputs(op, stdout);
                 char edge[256];
                 std::snprintf(edge, sizeof(edge), "%d -> %d;\n", node->id + 1, node->id);
                 fputs(edge, pipe);
-                fputs(edge, stdout);
+                // fputs(edge, stdout);
             }
         }
 
@@ -56,7 +53,7 @@ void Graph<T>::visualize()
             char conn[256];
             std::snprintf(conn, sizeof(conn), "%d->%d;\n", (edge.second)->id, (edge.first)->id + 1);
             fputs(conn, pipe);
-            fputs(conn, stdout);
+            // fputs(conn, stdout);
         }
         std::fprintf(pipe, "}\n");
         pclose(pipe);
