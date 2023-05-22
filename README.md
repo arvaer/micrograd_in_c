@@ -1,2 +1,3 @@
 # micrograd_in_c
-Reimplementing Dr. Karpathy's micrograd in c
+learning project to implement a backpropagation framework with a small memory footprint
+
