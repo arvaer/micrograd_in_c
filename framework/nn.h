@@ -29,6 +29,7 @@ void mat_dot(Mat dst, const Mat a, const Mat b);
 void mat_sum(Mat dst, const Mat a);
 void mat_fill(Mat m, float val);
 void mat_print(Mat m, const char* name);
+#define MAT_PRINT(m) mat_print(m, #m)
 
 #endif // NN_H_
 #ifdef NN_IMPLEMENTATION

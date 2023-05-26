@@ -4,7 +4,7 @@
 
 int main(void){
 	srand(time(0));
-
+	#define MAT_PRINT(m) mat_print(m, #m)
 	Mat w1 = mat_alloc(2,2);
 	Mat b1 = mat_alloc(1,2);
 	
@@ -17,11 +17,10 @@ int main(void){
 	mat_rand(w2, 0, 1);
 	mat_rand(b2, 0, 1);
 
-
-	mat_print(w1, "w1");
-	mat_print(b1, "b1");
-	mat_print(w2, "w2");
-	mat_print(b2, "b2");
+	MAT_PRINT(w1);
+	MAT_PRINT(w2);
+	MAT_PRINT(b1);
+	MAT_PRINT(b2);
 
 
 	return 0;
