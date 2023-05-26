@@ -10,6 +10,18 @@ typedef struct {
 	Mat w3, b3, a3;
 
 } Xor;
+Xor xor_alloc(void){
+	//initialization
+	Xor m;
+	m.a0 = mat_alloc(1,2); //input
+	m.a1 = mat_alloc(1,2);
+	m.a2 = mat_alloc(1,1);
+	m.w1 = mat_alloc(2,2);
+	m.b1 = mat_alloc(1,2);
+	m.w2 = mat_alloc(2,1);
+	m.b2 = mat_alloc(1,1);
+	return m;
+}
 
 // Forward defined as sigf(X*W + B)
 //	     [w11, w12
@@ -49,6 +61,67 @@ float cost(Xor m, Mat ti, Mat to){
 	}
 	return cost/n;
 }
+void finite_diff(Xor m, Xor g, Mat ti, Mat to,float eps){
+	float saved;
+	float c = cost(m, ti, to);
+	for (size_t i = 0; i < m.w1.rows ; i++){
+		for(size_t j = 0; j < m.w1.cols; j++){
+			saved = MAT_AT(m.w1, i, j);
+			MAT_AT(m.w1, i, j) += eps;
+			MAT_AT(g.w1,i,j) = (cost(m,ti,to) - c)/eps;
+			MAT_AT(m.w1, i, j) = saved;
+		}
+	}
+	for (size_t i = 0; i < m.b1.rows ; i++){
+		for(size_t j = 0; j < m.b1.cols; j++){
+			saved = MAT_AT(m.b1, i, j);
+			MAT_AT(m.b1, i, j) += eps;
+			MAT_AT(g.b1,i,j) = (cost(m,ti,to) - c)/eps;
+			MAT_AT(m.b1, i, j) = saved;
+		}
+	}
+	for (size_t i = 0; i < m.w2.rows ; i++){
+		for(size_t j = 0; j < m.w2.cols; j++){
+			saved = MAT_AT(m.w2, i, j);
+			MAT_AT(m.w2, i, j) += eps;
+			MAT_AT(g.w2,i,j) = (cost(m,ti,to) - c)/eps;
+			MAT_AT(m.w2, i, j) = saved;
+		}
+	}
+	for (size_t i = 0; i < m.b2.rows ; i++){
+		for(size_t j = 0; j < m.b2.cols; j++){
+			saved = MAT_AT(m.b2, i, j);
+			MAT_AT(m.b2, i, j) += eps;
+			MAT_AT(g.b2,i,j) = (cost(m,ti,to) - c)/eps;
+			MAT_AT(m.b2, i, j) = saved;
+		}
+	}
+}
+
+void xor_learn(Xor m, Xor g, float rate){
+	for (size_t i = 0; i < m.w1.rows ; i++){
+		for(size_t j = 0; j < m.w1.cols; j++){
+			MAT_AT(m.w1, i, j) -= rate*MAT_AT(g.w1,i,j);
+		}
+	}
+	for (size_t i = 0; i < m.b1.rows ; i++){
+		for(size_t j = 0; j < m.b1.cols; j++){
+			MAT_AT(m.b1, i, j) -= rate*MAT_AT(g.b1, i, j);
+		}
+	}
+	for (size_t i = 0; i < m.w2.rows ; i++){
+		for(size_t j = 0; j < m.w2.cols; j++){
+			MAT_AT(m.w2, i, j) -= rate*MAT_AT(g.w2, i, j);
+		}
+	}
+	for (size_t i = 0; i < m.b2.rows ; i++){
+		for(size_t j = 0; j < m.b2.cols; j++){
+			MAT_AT(m.b2, i, j) -= rate*MAT_AT(g.b2, i, j);
+		}
+	}
+
+}
+
 float td[] = {
 	0,0,0,
 	0,1,1,
@@ -58,7 +131,6 @@ float td[] = {
 
 int main(void){
 	srand(time(0));
-	Xor m;
 	size_t stride = 3;
 	size_t n = sizeof(td)/sizeof(td[0])/stride;
 	Mat ti = {
@@ -73,22 +145,23 @@ int main(void){
 		.stride = stride,
 		.es = td+2
 	};
-	MAT_PRINT(ti);
-	MAT_PRINT(to);
-	//initialization
-	m.a0 = mat_alloc(1,2); //input
-	m.a1 = mat_alloc(1,2);
-	m.a2 = mat_alloc(1,1);
-	m.w1 = mat_alloc(2,2);
-	m.b1 = mat_alloc(1,2);
-	m.w2 = mat_alloc(2,1);
-	m.b2 = mat_alloc(1,1);
+	
+	Xor m = xor_alloc();
+	Xor g = xor_alloc();
 	mat_rand(m.w1, 0 ,1);
 	mat_rand(m.b1, 0, 1);
 	mat_rand(m.w2, 0, 1);
 	mat_rand(m.b2, 0, 1);
+	
+	float eps = 1e-3;
+	float rate = 1e-3;
+	printf("%f  cost \n", cost(m, ti, to));
+	finite_diff(m,g,ti,to,eps);
+	xor_learn(m,g,rate);
 
-	printf("%f  cost", cost(m, ti, to));
+	printf("%f  cost\n", cost(m, ti, to));
+
+
 #if 0
 	float x1 = .1;
 	float x2 = .2;

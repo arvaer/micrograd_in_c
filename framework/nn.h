@@ -117,8 +117,6 @@ void mat_sum(Mat dst, const Mat a){
 			MAT_AT(dst, i, j) += MAT_AT(a, i, j);
 		}
 	}
-	(void) dst;
-	(void) a;
 
 }
 void mat_print(const Mat m, const char* name){
