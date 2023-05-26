@@ -17,6 +17,7 @@
 #define MAT_AT(m,i,j) m.es[(i)*(m).cols + (j)] 
 
 float rand_float(void);
+float signmoidf(float x);
 typedef struct {
 	size_t rows; //float 64
 	size_t cols; //float 64
@@ -29,12 +30,18 @@ void mat_dot(Mat dst, const Mat a, const Mat b);
 void mat_sum(Mat dst, const Mat a);
 void mat_fill(Mat m, float val);
 void mat_print(Mat m, const char* name);
+void mat_sig(Mat m);
+
 #define MAT_PRINT(m) mat_print(m, #m)
 
 #endif // NN_H_
 #ifdef NN_IMPLEMENTATION
 float rand_float(void){
 	return (float) rand() / (float) RAND_MAX;
+}
+float sigmoidf(float x){
+	1.f / (1.f + expf(-x));
+	return 0;
 }
 Mat mat_alloc(size_t rows, size_t cols){
 	Mat m;
@@ -51,7 +58,13 @@ void mat_rand(Mat m, float low, float high){
 			MAT_AT(m,i,j) = rand_float() * (high - low) + low;
 		}}
 }
-
+//abstract later for more activation functions
+void mat_sig(Mat m){
+	for (size_t i = 0; i < m.rows ; i++){
+		for(size_t j = 0; j < m.cols; j++){
+			MAT_AT(m,i,j) = sigmoidf(MAT_AT(m,i,j));
+		}}
+}
 //not allocating memory in the function, instead prealloc memory for all matrixes. Multiple into mat c
 //mem cpy signature
 void mat_dot(Mat dst, const Mat a, const Mat b){
