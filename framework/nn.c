@@ -16,10 +16,7 @@ typedef struct {
 //[x1, x2] *   		+ [b1, b2] = [a1, a2]
 //	     w21, w22]
 //
-float forward_xor(Xor m, float x1, float x2){
-
-	MAT_AT(m.a0, 0, 0) = x1;
-	MAT_AT(m.a0, 0, 1) = x2;
+void forward_xor(Xor m){
 	//m.a1 is the dot product of m.ao(inputs) [x1, x2] and weights m.w1
 	mat_dot(m.a1, m.a0, m.w1);
 	//add biases to m.ai
@@ -30,10 +27,18 @@ float forward_xor(Xor m, float x1, float x2){
 	mat_dot(m.a2, m.a1, m.w2);
 	mat_sum(m.a2, m.b2);
 	mat_sig(m.a2);
+}
 
+//Accept Xor m, Training Input, Training Output
+float cost(Xor m, Mat ti, Mat to){
+	//make sure each row is the same, they are training samples
+	assert(ti.rows == to.rows);
+	size_t n = ti.rows;
+	for(size_t i = 0; i < n; i++){
+		Mat x = mat_copy(m.a0, mat_row(ti, i));		
+		Mat y = mat_row(to, i);
 
-	float y = *m.a2.es;
-	return y;
+	}
 }
 
 int main(void){
@@ -51,10 +56,17 @@ int main(void){
 	mat_rand(m.b1, 0, 1);
 	mat_rand(m.w2, 0, 1);
 	mat_rand(m.b2, 0, 1);
+
+	float x1 = .1;
+	float x2 = .2;
 	
 	for (size_t i = 0; i < 2; i ++){
 		for(size_t j = 0; j< 2; j++){
-			printf("%zu ^ %zu = %f\n", i, j, forward_xor(m,i,j));
+			MAT_AT(m.a0, 0, 0) = x1;
+			MAT_AT(m.a0, 0, 1) = x2;
+			forward_xor(m);
+			float y = *m.a2.es;
+			printf("%zu ^ %zu = %f\n", i, j, y);
 		}}
 
 	return 0;

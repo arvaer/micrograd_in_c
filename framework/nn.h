@@ -32,6 +32,8 @@ void mat_sum(Mat dst, const Mat a);
 void mat_fill(Mat m, float val);
 void mat_print(Mat m, const char* name);
 void mat_sig(Mat m);
+void mat_row(Mat m, size_t row);
+void mat_copy(Mat dst, Mat src);
 
 #define MAT_PRINT(m) mat_print(m, #m)
 
@@ -64,6 +66,24 @@ void mat_sig(Mat m){
 		for(size_t j = 0; j < m.cols; j++){
 			MAT_AT(m,i,j) = sigmoidf(MAT_AT(m,i,j));
 		}}
+}
+
+void mat_row(Mat m, size_t row){
+	NN_ASSERT(m.rows <= row);
+	return (Mat){
+	.rows = 1,
+	.cols = m.cols,
+	.es = &MAT_AT(m,row,0)};
+}
+
+void mat_copy(Mat dst, Mat src){
+	NN_ASSERT(dst.rows == src.rows);
+	NN_ASSERT(dst.cols == src.cols);
+	for(size_t i = 0; i < dst.rows ; i ++){
+		for(size_t j = 0; j < dst.cols ; j++){
+		MAT_AT(dst, i, j) = MAT_AT(src, i, j);
+		}
+	}
 }
 //not allocating memory in the function, instead prealloc memory for all matrixes. Multiple into mat c
 //mem cpy signature
