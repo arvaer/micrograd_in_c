@@ -28,6 +28,7 @@ void mat_rand(Mat m, float low, float high);
 void mat_dot(Mat dst, const Mat a, const Mat b);
 void mat_sum(Mat dst, const Mat a);
 void mat_fill(Mat m, float val);
+void mat_print(Mat m, const char* name);
 
 #endif // NN_H_
 #ifdef NN_IMPLEMENTATION
@@ -84,13 +85,15 @@ void mat_sum(Mat dst, const Mat a){
 	(void) a;
 
 }
-void mat_print(const Mat m){
+void mat_print(const Mat m, const char* name){
+	printf("%s = [\n", name);
 	for (size_t i = 0; i < m.rows; i++){
 		for(size_t j = 0; j < m.cols; j++){
-				printf("%f ", MAT_AT(m,i,j));
+				printf("    %f ", MAT_AT(m,i,j));
 			}
 		printf("\n");
 	}
+	printf("]\n");
 }
 
 void mat_fill(Mat m, float val){

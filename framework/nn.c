@@ -4,23 +4,24 @@
 
 int main(void){
 	srand(time(0));
-	float id_data[4] = {1, 0, 0, 1};
-	Mat id = { .rows = 2, .cols = 2, .es = id_data };
+
+	Mat w1 = mat_alloc(2,2);
+	Mat b1 = mat_alloc(1,2);
+	
+	Mat w2 = mat_alloc(2,1);
+	Mat b2 = mat_alloc(1,1);
 
 
-	Mat a = mat_alloc(1,2);
-	Mat b = mat_alloc(2, 2);
-	Mat M = mat_alloc(1, 2);
-	mat_rand(a, 5, 10);
-	mat_fill(b,1);
-	
-	mat_print(a);
-	printf("************ \n");
-	mat_print(b);
-	printf("************\n");
-	mat_dot(M, a, id);
-	mat_print(M);
-	
+	mat_rand(w1, 0 ,1);
+	mat_rand(b1, 0, 1);
+	mat_rand(w2, 0, 1);
+	mat_rand(b2, 0, 1);
+
+
+	mat_print(w1, "w1");
+	mat_print(b1, "b1");
+	mat_print(w2, "w2");
+	mat_print(b2, "b2");
 
 
 	return 0;
