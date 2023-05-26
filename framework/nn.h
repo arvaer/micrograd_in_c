@@ -15,13 +15,14 @@
 #define NN_ASSERT assert
 #endif //NN_ASSERT
 
-#define MAT_AT(m,i,j) m.es[(i)*(m).cols + (j)] 
+#define MAT_AT(m,i,j) m.es[(i)*(m).stride + (j)] 
 
 float rand_float(void);
 float signmoidf(float x);
 typedef struct {
 	size_t rows; //float 64
 	size_t cols; //float 64
+	size_t stride;
 	float *es;  //pointer to the beginning of the data of the matrix
 } Mat;
 
@@ -32,7 +33,7 @@ void mat_sum(Mat dst, const Mat a);
 void mat_fill(Mat m, float val);
 void mat_print(Mat m, const char* name);
 void mat_sig(Mat m);
-void mat_row(Mat m, size_t row);
+Mat mat_row(Mat m, size_t row);
 void mat_copy(Mat dst, Mat src);
 
 #define MAT_PRINT(m) mat_print(m, #m)
@@ -49,6 +50,7 @@ Mat mat_alloc(size_t rows, size_t cols){
 	Mat m;
 	m.rows = rows;
 	m.cols = cols;
+	m.stride = cols;
 	m.es = NN_MALLOC(sizeof(*m.es)*rows*cols); //dereference to get the sizeof the block
 	NN_ASSERT(m.es != NULL);
 	return m;
@@ -68,11 +70,11 @@ void mat_sig(Mat m){
 		}}
 }
 
-void mat_row(Mat m, size_t row){
-	NN_ASSERT(m.rows <= row);
+Mat mat_row(Mat m, size_t row){
 	return (Mat){
 	.rows = 1,
 	.cols = m.cols,
+	.stride = m.stride,
 	.es = &MAT_AT(m,row,0)};
 }
 
