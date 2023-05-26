@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <math.h>
 
 #ifndef NN_MALLOC
 #include <stdlib.h>
@@ -40,8 +41,7 @@ float rand_float(void){
 	return (float) rand() / (float) RAND_MAX;
 }
 float sigmoidf(float x){
-	1.f / (1.f + expf(-x));
-	return 0;
+	return 1.f / (1.f + expf(-x));
 }
 Mat mat_alloc(size_t rows, size_t cols){
 	Mat m;
