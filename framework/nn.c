@@ -130,6 +130,14 @@ float td[] = {
 };
 
 int main(void){
+	
+	size_t arch[] = {2, 2, 2};
+	NN nn = nn_alloc(arch, ARRAY_LEN(arch));
+	NN_PRINT(nn);
+	
+
+	return 0;
+	
 	srand(time(0));
 	size_t stride = 3;
 	size_t n = sizeof(td)/sizeof(td[0])/stride;
@@ -156,10 +164,12 @@ int main(void){
 	float eps = 1e-3;
 	float rate = 1e-3;
 	printf("%f  cost \n", cost(m, ti, to));
-	finite_diff(m,g,ti,to,eps);
-	xor_learn(m,g,rate);
+	for(int i = 0; i < 210000*100; i ++){
+		finite_diff(m,g,ti,to,eps);
+		xor_learn(m,g,rate);
+		printf("%f  cost\n", cost(m, ti, to));
+	}
 
-	printf("%f  cost\n", cost(m, ti, to));
 
 
 #if 0
