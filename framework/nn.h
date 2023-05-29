@@ -17,38 +17,38 @@
 
 #define MAT_AT(m,i,j) m.es[(i)*(m).stride + (j)] 
 #define ARRAY_LEN(xs) sizeof(xs) / sizeof(xs[0])
-#define MAT_PRINT(m) mat_print(m, #m)
-float rand_float(void);
-float signmoidf(float x);
+#define MAT_PRINT(m) mat_print(m, #m, 0)
+#define NN_PRINT(nn) nn_print(nn, #nn)
+
 typedef struct {
 	size_t rows; //float 64
 	size_t cols; //float 64
 	size_t stride;
 	float *es;  //pointer to the beginning of the data of the matrix
 } Mat;
-Mat mat_alloc(size_t rows, size_t cols);
-void mat_rand(Mat m, float low, float high);
-void mat_dot(Mat dst, const Mat a, const Mat b);
-void mat_sum(Mat dst, const Mat a);
-void mat_fill(Mat m, float val);
-void mat_print(Mat m, const char* name);
-void mat_sig(Mat m);
-Mat mat_row(Mat m, size_t row);
-void mat_copy(Mat dst, Mat src);
-
-
 typedef struct {
 	size_t count;
 	Mat *ws;
 	Mat *bs;
 	Mat *as; // THE amount of activations is count + 1
 } NN;
+
+
+
+float rand_float(void);
+float signmoidf(float x);
+Mat mat_alloc(size_t rows, size_t cols);
+void mat_rand(Mat m, float low, float high);
+void mat_dot(Mat dst, const Mat a, const Mat b);
+void mat_sum(Mat dst, const Mat a);
+void mat_fill(Mat m, float val);
+void mat_print(Mat m, const char* name, size_t padding);
+void mat_sig(Mat m);
+Mat mat_row(Mat m, size_t row);
+void mat_copy(Mat dst, Mat src);
+
+
 void nn_print(NN nn, const char *name);
-#define NN_PRINT(nn) nn_print(nn, #nn)
-
-
-
-
 
 #endif // NN_H_
 #ifdef NN_IMPLEMENTATION
@@ -131,15 +131,16 @@ void mat_sum(Mat dst, const Mat a){
 	}
 
 }
-void mat_print(const Mat m, const char* name){
-	printf("%s = [\n", name);
+void mat_print(const Mat m, const char* name, size_t padding){
+	printf("%*s%s = [\n", (int) padding, "", name);
 	for (size_t i = 0; i < m.rows; i++){
+	printf("%*s   ", (int) padding, "");
 		for(size_t j = 0; j < m.cols; j++){
-				printf("    %f ", MAT_AT(m,i,j));
+				printf("%f ", MAT_AT(m,i,j));
 			}
 		printf("\n");
 	}
-	printf("]\n");
+	printf("%*s]\n", (int) padding, "");
 }
 
 void mat_fill(Mat m, float val){
@@ -171,11 +172,15 @@ NN nn_alloc(size_t *arch, size_t arch_count){
 	}
 	return nn;
 }
+
 void nn_print(NN nn, const char *name){
 	printf("%s = [\n", name);
+	char buf[256];
 	for (size_t i = 0; i < nn.count; i++){
-		MAT_PRINT(*nn.ws);
-		MAT_PRINT(*nn.bs);
+		snprintf(buf, sizeof(buf), "ws%zu", i);
+		mat_print(nn.ws[i], buf, 4);
+		snprintf(buf, sizeof(buf), "bs%zu", i);
+		mat_print(nn.bs[i], buf, 4);
 	}
 
 }

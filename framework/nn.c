@@ -131,13 +131,14 @@ float td[] = {
 
 int main(void){
 	
-	size_t arch[] = {2, 2, 2};
+	size_t arch[] = {2, 2, 1};
 	NN nn = nn_alloc(arch, ARRAY_LEN(arch));
-	NN_PRINT(nn);
+	//NN_PRINT(nn);
 	
 
-	return 0;
+//	return 0;
 	
+//#if 0
 	srand(time(0));
 	size_t stride = 3;
 	size_t n = sizeof(td)/sizeof(td[0])/stride;
@@ -170,9 +171,8 @@ int main(void){
 		printf("%f  cost\n", cost(m, ti, to));
 	}
 
-
-
 #if 0
+
 	float x1 = .1;
 	float x2 = .2;
 	for (size_t i = 0; i < 2; i ++){
