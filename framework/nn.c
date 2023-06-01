@@ -127,7 +127,6 @@ float td[] = {
 int main(void){
 	
 	srand(time(0));
-	
 	size_t stride = 3;
 	size_t n = sizeof(td)/sizeof(td[0])/stride;
 	
@@ -151,13 +150,23 @@ int main(void){
 	nn_rand(nn, 0, 1);
 
 	float eps = 1e-3;
-	float rate = 1e-3;
+	float rate = 1e-2;
 	printf("%f  cost \n", nn_cost(nn, ti, to));
-	for(int i = 0; i < 3; i ++){
+	for(int i = 0; i < 150000; i++){
 		nn_finite_diff(nn,g,ti,to,eps);
 		nn_learn(nn,g,rate);
 		printf("%f  cost\n", nn_cost(nn, ti, to));
 	}
+
+
+	for (size_t i = 0; i < 2; i++){
+		for (size_t j = 0; j < 2; j++){
+			MAT_AT(NN_INPUT(nn), 0, 0) = i;
+			MAT_AT(NN_INPUT(nn), 0, 1) = j;
+			nn_forward(nn);
+			printf("%zu ^ %zu = %f \n", i, j, MAT_AT(NN_OUTPUT(nn), 0, 0));
+	}}
+
 
 	return 0;
 }

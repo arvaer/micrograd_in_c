@@ -209,44 +209,44 @@ void nn_rand(NN nn, float low, float high){
 //
 //
 //
-
-
 void nn_forward(NN nn){
-	for(size_t i = 1; i < nn.count; i++){
+	for(size_t i = 0; i < nn.count; i++){
 		mat_dot(nn.as[i+1], nn.as[i], nn.ws[i]);
 		mat_sum(nn.as[i+1], nn.bs[i]);
 		//doesnt overflow because activations is count+1
 		mat_sig(nn.as[i+1]);
 	}
 }
-float nn_cost(NN nn, Mat in, Mat out){
-	//basically want to interate through each of the wayers and compare the output of NN to the training data
-	float cost = 0.0;
-	for (size_t i = 0; i < nn.count; i++){
-		Mat x = mat_row(in, i);
-		Mat y = mat_row(out, i);
-		mat_copy(NN_INPUT(nn), x);
+float nn_cost(NN nn, Mat ti, Mat to){
+	//make sure each row is the same, they are training samples
+	assert(ti.rows == to.rows);
+	assert(to.cols == NN_OUTPUT(nn).cols);
+	size_t n = ti.rows;
+	float cost = 0;
+	for(size_t i = 0; i < n; i++){
+		Mat x = mat_row(ti, i);		
+		Mat y = mat_row(to, i);
+		mat_copy(NN_INPUT(nn),x);
 		nn_forward(nn);
-
-		size_t q = out.cols;
-		for (size_t j = 0; j < q; j++){
-			float diff = MAT_AT(NN_OUTPUT(nn), 0, j) - MAT_AT(y, 0, j);
-			cost += diff*diff;
-		}
+	size_t q = to.cols;
+	for(size_t j = 0; j < q; j++){
+		float d = MAT_AT(NN_OUTPUT(nn),0,j) - MAT_AT(y,0,j);
+		cost += d*d;
 	}
-	return cost;
+	}
+	return cost/n;
 }
 
 void nn_finite_diff(NN nn, NN g, Mat ti, Mat to, float eps){
 	float saved = 0.0;
 	float c = nn_cost(nn, ti, to);
 	
-	for(size_t a = 0; a < nn.count; a++){
+	for(size_t a = 0; a < nn.count ; a++){
 		size_t wrows = nn.ws[a].rows;
 		size_t wcols = nn.ws[a].cols;
+
 		size_t brows = nn.bs[a].rows;
 		size_t bcols = nn.bs[a].cols;
-
 
 		for(size_t i = 0; i < wrows; i++){
 			for(size_t j = 0; j<wcols; j++){
@@ -263,11 +263,10 @@ void nn_finite_diff(NN nn, NN g, Mat ti, Mat to, float eps){
 				MAT_AT(g.bs[a], i, j) = (nn_cost(nn, ti, to) - c)/eps;
 				MAT_AT(nn.bs[a], i, j) = saved;
 			}
+			
 
+		}
 	}
-
-
-}
 }
 
 void nn_learn(NN nn, NN g, float rate){
@@ -276,14 +275,16 @@ void nn_learn(NN nn, NN g, float rate){
 		size_t wcols = nn.ws[a].cols;
 		size_t brows = nn.bs[a].rows;
 		size_t bcols = nn.bs[a].cols;
+
 		for(size_t i = 0; i < wrows; i++){
 			for(size_t j = 0; j<wcols; j++){
 				MAT_AT(nn.ws[a], i, j) -= rate * MAT_AT(g.ws[a], i, j);
+
 			}
 		}
 		for(size_t i = 0; i < brows; i++){
 			for(size_t j = 0; j<bcols; j++){
-				MAT_AT(nn.bs[a], i, j) -= MAT_AT(g.bs[a], i, j);
+				MAT_AT(nn.bs[a], i, j) -= rate*MAT_AT(g.bs[a], i, j);
 			}
 	}
 }
