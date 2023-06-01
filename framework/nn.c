@@ -58,11 +58,10 @@ float cost(Xor m, Mat ti, Mat to){
 	return cost/n;
 }
 void finite_diff(Xor m, Xor g, Mat ti, Mat to,float eps){
-	float saved;
+	float saved = 0;
 	float c = cost(m, ti, to);
 	for (size_t i = 0; i < m.w1.rows ; i++){
 		for(size_t j = 0; j < m.w1.cols; j++){
-			saved = MAT_AT(m.w1, i, j);
 			MAT_AT(m.w1, i, j) += eps;
 			MAT_AT(g.w1,i,j) = (cost(m,ti,to) - c)/eps;
 			MAT_AT(m.w1, i, j) = saved;
@@ -148,47 +147,17 @@ int main(void){
 
 	size_t arch[] = {2, 2, 1};
 	NN nn = nn_alloc(arch, ARRAY_LEN(arch));
+	NN g = nn_alloc(arch, ARRAY_LEN(arch));
 	nn_rand(nn, 0, 1);
-	MAT_PRINT(NN_INPUT(nn));
-	MAT_PRINT(mat_row(ti, 1));
 
-
-	mat_copy(NN_INPUT(nn), mat_row(ti, 1));
-	nn_forward(nn);
-	MAT_PRINT(NN_OUTPUT(nn));
-	
-
-	return 0;
-	
-//#if 0
-	Xor m = xor_alloc();
-	Xor g = xor_alloc();
-	mat_rand(m.w1, 0 ,1);
-	mat_rand(m.b1, 0, 1);
-	mat_rand(m.w2, 0, 1);
-	mat_rand(m.b2, 0, 1);
-	
 	float eps = 1e-3;
 	float rate = 1e-3;
-	printf("%f  cost \n", cost(m, ti, to));
-	for(int i = 0; i < 210000*100; i ++){
-		finite_diff(m,g,ti,to,eps);
-		xor_learn(m,g,rate);
-		printf("%f  cost\n", cost(m, ti, to));
+	printf("%f  cost \n", nn_cost(nn, ti, to));
+	for(int i = 0; i < 3; i ++){
+		nn_finite_diff(nn,g,ti,to,eps);
+		nn_learn(nn,g,rate);
+		printf("%f  cost\n", nn_cost(nn, ti, to));
 	}
 
-#if 0
-
-	float x1 = .1;
-	float x2 = .2;
-	for (size_t i = 0; i < 2; i ++){
-		for(size_t j = 0; j< 2; j++){
-			MAT_AT(m.a0, 0, 0) = x1;
-			MAT_AT(m.a0, 0, 1) = x2;
-			forward_xor(m);
-			float y = *m.a2.es;
-			printf("%zu ^ %zu = %f\n", i, j, y);
-		}}
-#endif //0
 	return 0;
 }
