@@ -23,11 +23,7 @@ Xor xor_alloc(void){
 	return m;
 }
 
-// Forward defined as sigf(X*W + B)
-//	     [w11, w12
-//[x1, x2] *   		+ [b1, b2] = [a1, a2]
-//	     w21, w22]
-//
+
 void forward_xor(Xor m){
 	//m.a1 is the dot product of m.ao(inputs) [x1, x2] and weights m.w1
 	mat_dot(m.a1, m.a0, m.w1);
@@ -131,17 +127,11 @@ float td[] = {
 
 int main(void){
 	
-	size_t arch[] = {2, 2, 1};
-	NN nn = nn_alloc(arch, ARRAY_LEN(arch));
-	//NN_PRINT(nn);
-	
-
-//	return 0;
-	
-//#if 0
 	srand(time(0));
+	
 	size_t stride = 3;
 	size_t n = sizeof(td)/sizeof(td[0])/stride;
+	
 	Mat ti = {
 		.rows = n, 
 		.cols = 2, 
@@ -155,6 +145,22 @@ int main(void){
 		.es = td+2
 	};
 	
+
+	size_t arch[] = {2, 2, 1};
+	NN nn = nn_alloc(arch, ARRAY_LEN(arch));
+	nn_rand(nn, 0, 1);
+	MAT_PRINT(NN_INPUT(nn));
+	MAT_PRINT(mat_row(ti, 1));
+
+
+	mat_copy(NN_INPUT(nn), mat_row(ti, 1));
+	nn_forward(nn);
+	MAT_PRINT(NN_OUTPUT(nn));
+	
+
+	return 0;
+	
+//#if 0
 	Xor m = xor_alloc();
 	Xor g = xor_alloc();
 	mat_rand(m.w1, 0 ,1);

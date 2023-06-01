@@ -19,6 +19,8 @@
 #define ARRAY_LEN(xs) sizeof(xs) / sizeof(xs[0])
 #define MAT_PRINT(m) mat_print(m, #m, 0)
 #define NN_PRINT(nn) nn_print(nn, #nn)
+#define NN_INPUT(nn) (nn).as[0]
+#define NN_OUTPUT(nn) (nn).as[(nn).count]
 
 typedef struct {
 	size_t rows; //float 64
@@ -48,7 +50,12 @@ Mat mat_row(Mat m, size_t row);
 void mat_copy(Mat dst, Mat src);
 
 
+
+
+
 void nn_print(NN nn, const char *name);
+void nn_rand(NN nn, float low, float high);
+void nn_forward(NN nn);
 
 #endif // NN_H_
 #ifdef NN_IMPLEMENTATION
@@ -183,5 +190,30 @@ void nn_print(NN nn, const char *name){
 		mat_print(nn.bs[i], buf, 4);
 	}
 
+}
+
+void nn_rand(NN nn, float low, float high){
+	size_t n = nn.count;
+	for(size_t i = 0; i < n; i++){
+		mat_rand(nn.ws[i], low, high);
+		mat_rand(nn.bs[i], low, high);
+	}
+}
+// Forward defined as sigf(X*W + B)
+//	     [w11, w12
+//[x1, x2] *   		+ [b1, b2] = [a1, a2]
+//	     w21, w22]
+//
+//
+//
+
+
+void nn_forward(NN nn){
+	for(size_t i = 1; i < nn.count; i++){
+		mat_dot(nn.as[i+1], nn.as[i], nn.ws[i]);
+		mat_sum(nn.as[i+1], nn.bs[i]);
+		//doesnt overflow because activations is count+1
+		mat_sig(nn.as[i+1]);
+	}
 }
 #endif // NN_IMPLEMENTATION
