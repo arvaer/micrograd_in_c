@@ -202,9 +202,6 @@ void nn_rand(NN nn, float low, float high) {
 //	     [w11, w12
 //[x1, x2] *   		+ [b1, b2] = [a1, a2]
 //	     w21, w22]
-//
-//
-//
 void nn_forward(NN nn) {
   for (size_t i = 0; i < nn.count; i++) {
     mat_dot(nn.as[i + 1], nn.as[i], nn.ws[i]);
@@ -233,60 +230,65 @@ float nn_cost(NN nn, Mat ti, Mat to) {
   return cost / n;
 }
 
-void nn_backprop(NN nn, NN g, Mat ti, Mat to) {
-  NN_ASSERT(ti.rows == to.rows);
-  size_t n = ti.rows;
-  nn_zero(g);
+void nn_backprop(NN nn, NN g, Mat ti, Mat to)
+{
+    NN_ASSERT(ti.rows == to.rows);
+    size_t n = ti.rows;
+    NN_ASSERT(NN_OUTPUT(nn).cols == to.cols);
 
-  // i = current sample
-  // l = current layer
-  // j = current activation
-  // k = previous activation
-  for (size_t i = 0; i < n; i++) {
-      mat_copy(NN_INPUT(nn), mat_row(ti, i));
-      nn_forward(nn);
+    nn_zero(g);
 
-      for (size_t j = 0; j <= nn.count; j++){
-          mat_fill(g.as[j], 0);
-      }
+    // i - current sample
+    // l - current layer
+    // j - current activation
+    // k - previous activation
 
-      for (size_t j = 0; j < to.cols; j++) {
-          MAT_AT(NN_OUTPUT(g), 0, j) =
-              MAT_AT(NN_OUTPUT(nn), 0, j) - MAT_AT(to, i, j);
-      }
-      // iterate all the current layers
-      // for each activation, iterate each of the previous activation
-      for (size_t l = nn.count; l > 0; l--) {
-          for (size_t j = 0; j < nn.as[l].cols; j++) {
-              float a = MAT_AT(nn.as[l], 0, j);
-              float da = MAT_AT(g.as[l], 0, j);
-              MAT_AT(g.as[l - 1], 0, j) += 2 * da * a * (1 - a);
-              for (size_t k = 0; k < nn.as[l - 1].cols; k++) {
-                  //j - weight matrix cols
-                  //k - weight matrix rows
-                  float pa = MAT_AT(nn.as[l-1], 0, k);
-                  float w = MAT_AT(nn.ws[l-1], 0, j);
-                  MAT_AT(g.ws[l-1], k, j) += 2*da*a*(1-a)*pa;
-                  MAT_AT(g.as[l-1], 0, k) += 2*da*a*(1-a)*w;
-              }
-          }
-      }
-  }
-  for (size_t i= 0; i < g.count; i++){
-      for (size_t j = 0; j < g.ws[i].rows; j++){
-          for (size_t k = 0; k < g.ws[i].cols; k++){
-              MAT_AT(g.ws[i], j, k) /= n;
-          }
-      }
-  }
-  for (size_t i= 0; i < g.count; i++){
-      for (size_t j = 0; j < g.bs[i].rows; j++){
-          for (size_t k = 0; k < g.bs[i].cols; k++){
-              MAT_AT(g.bs[i], j, k) /= n;
-          }
-      }
-  }
+    for (size_t i = 0; i < n; ++i) {
+        mat_copy(NN_INPUT(nn), mat_row(ti, i));
+        nn_forward(nn);
+
+        for (size_t j = 0; j <= nn.count; ++j) {
+            mat_fill(g.as[j], 0);
+        }
+
+        for (size_t j = 0; j < to.cols; ++j) {
+            MAT_AT(NN_OUTPUT(g), 0, j) = MAT_AT(NN_OUTPUT(nn), 0, j) - MAT_AT(to, i, j);
+        }
+
+        float s = 2;
+
+        for (size_t l = nn.count; l > 0; --l) {
+            for (size_t j = 0; j < nn.as[l].cols; ++j) {
+                float a = MAT_AT(nn.as[l], 0, j);
+                float da = MAT_AT(g.as[l], 0, j);
+                float qa = a*(1-a);
+                    MAT_AT(g.bs[l-1], 0, j) += s*da*qa;
+                for (size_t k = 0; k < nn.as[l-1].cols; ++k) {
+                    // j - weight matrix col
+                    // k - weight matrix row
+                    float pa = MAT_AT(nn.as[l-1], 0, k);
+                    float w = MAT_AT(nn.ws[l-1], k, j);
+                    MAT_AT(g.ws[l-1], k, j) += s*da*qa*pa;
+                    MAT_AT(g.as[l-1], 0, k) += s*da*qa*w;
+                }
+            }
+        }
+    }
+
+    for (size_t i = 0; i < g.count; ++i) {
+        for (size_t j = 0; j < g.ws[i].rows; ++j) {
+            for (size_t k = 0; k < g.ws[i].cols; ++k) {
+                MAT_AT(g.ws[i], j, k) /= n;
+            }
+        }
+        for (size_t j = 0; j < g.bs[i].rows; ++j) {
+            for (size_t k = 0; k < g.bs[i].cols; ++k) {
+                MAT_AT(g.bs[i], j, k) /= n;
+            }
+        }
+    }
 }
+
 
 void nn_finite_diff(NN nn, NN g, Mat ti, Mat to, float eps) {
   float saved = 0.0;
